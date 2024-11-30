@@ -12,6 +12,7 @@ namespace g
     LOGFONTW f{};
 
     const char * g_Mid_File_Path = R"(../src/music/music.mid)";
+	const char * g_Wav_File_Path = R"(../src/music/eason.wav)";
 }
 
 using namespace std;
@@ -23,7 +24,8 @@ static bool end_game();
 
 int main()
 {
-    std::thread playMusic_t(play_music,g::g_Mid_File_Path);
+    //std::thread playMusic_t(play_music,g::g_Wav_File_Path);
+	std::thread playMusic_t(play_music_test);
 
 	init_graph();
 

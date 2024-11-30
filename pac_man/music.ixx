@@ -1,14 +1,37 @@
 ﻿module;
 
 #include <Windows.h>
+#include <mmsystem.h>
 #include <cstdio>
+
+#pragma comment (lib,"winmm.lib")
 
 export module music;
 
-export bool play_music(const char* filePath);
+import std;
 
+export bool play_music(const char* file_path);
+export bool play_music2(const char* filePath);
 
-bool play_music(const char* filePath) {
+export void play_music_test()
+{
+	PlaySound(TEXT("../src/music/eason.wav"), nullptr, SND_FILENAME | SND_ASYNC);
+}
+
+/**
+ * @brief 播放 wav 格式文件
+ * @param file_path 
+ * @return 
+ */
+bool play_music(const char* file_path)
+{
+    PlaySound((LPCWSTR)file_path,nullptr, SND_FILENAME | SND_ASYNC);
+
+    return true;
+}
+
+bool play_music2(const char* filePath)
+{
 
     HMODULE module = LoadLibraryA("winmm.dll");
 

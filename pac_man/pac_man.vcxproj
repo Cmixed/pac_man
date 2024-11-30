@@ -139,6 +139,7 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="file_io.ixx" />
     <ClCompile Include="music.ixx" />
+    <ClCompile Include="ui.ixx" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
