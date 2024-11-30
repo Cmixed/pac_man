@@ -138,6 +138,7 @@
     <ClCompile Include="data.ixx" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="file_io.ixx" />
+    <ClCompile Include="music.ixx" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />

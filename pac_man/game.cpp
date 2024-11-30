@@ -1,9 +1,8 @@
 ﻿import std;
 import data;
+import music;
 
 #include <ege/graphics.h>
-#include <Windows.h>
-#include <cstdio>
 
 namespace g
 {
@@ -21,8 +20,6 @@ static bool init_graph();
 static bool start_game();
 static optional<int> game_core();
 static bool end_game();
-
-static bool play_music(const char* filePath);
 
 int main()
 {
@@ -42,7 +39,7 @@ int main()
         std::cerr << e.what();
     }
 
-	return 0;
+    return 0;
 }
 
 bool init_graph()
@@ -57,7 +54,28 @@ bool init_graph()
 
 bool start_game()
 {
-	
+	cleardevice();
+
+
+    for ( ; is_run(); delay_fps(60)) {
+    
+	    if (kbmsg()) {
+	       
+	        key_msg k{0};
+	        k = getkey();
+	        
+	        if (k.key != key_esc) {
+	            if (k.key == key_space) {
+                    ;
+	            }
+	        } else {
+	            closegraph();
+	            return true;
+	        }
+	    }
+	}
+
+	return true;	
 }
 
 optional<int> game_core()
@@ -89,25 +107,4 @@ bool end_game()
 	}
 
 	return true;
-}
-
-bool play_music(const char* filePath) {
-
-    HMODULE module = LoadLibraryA("winmm.dll");
-
-    typedef MCIERROR(WINAPI* MciSendStringT)(LPCSTR lpstrCommand, LPSTR lpstrReturnString, UINT uReturnLength, HWND hwndCallback);
-    
-    auto func_mciSendStringA = (MciSendStringT)GetProcAddress(module, "mciSendStringA");
-    if (func_mciSendStringA == nullptr) return false;
-    
-    char buff[255]{ 0 }, command[100]{ 0 };
-    sprintf_s(command, 100, "open %s alias playsound_134", filePath);
-    func_mciSendStringA(command, buff, 254, nullptr);
-    sprintf_s(command, 100, "set playsound_134 time format milliseconds");
-    func_mciSendStringA(command, buff, 254, nullptr);
-    sprintf_s(command, 100, "status playsound_134 length");
-    func_mciSendStringA(command, buff, 254, nullptr);
-    sprintf_s(command, 100, "play playsound_134 from 0 to %s", buff);
-    func_mciSendStringA(command, buff, 254, nullptr);
-    return true;
 }
