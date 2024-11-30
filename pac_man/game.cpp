@@ -9,12 +9,23 @@ namespace g
 	
 }
 
+using namespace std;
+
+static bool init_graph();
 
 int main()
 {
-	initgraph(640, 480);	// 初始化一个640×480的绘图窗口
-	circle(320, 240, 100);	// 画圆，圆心为(320, 240)，半径为100
-	getch();	// 暂停等待按键
-	closegraph();	// 关闭绘图窗口
+	init_graph();
+
 	return 0;
+}
+
+static bool init_graph()
+{
+	initgraph(800,800,INIT_RENDERMANUAL);
+    setbkcolor(EGERGB(0x00,0x00,0x00));
+    setfillcolor(EGECOLORA(WHITE,0xff));
+    ege_enable_aa(true);
+
+	return true;
 }
