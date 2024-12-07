@@ -50,4 +50,3 @@ export constexpr struct Ui
 		int y_l{ 408 }, y_g{ 442 };
 	} buttonQuit;
 } ui;
-

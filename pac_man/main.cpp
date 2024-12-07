@@ -32,7 +32,7 @@ namespace g
 
 	ExMessage key{0}, msg{0};
 
-	static bool isWin{ true };
+	static bool isWin{true};
 }
 
 // 函数列表
@@ -66,7 +66,6 @@ BEGIN:
 	// 开始菜单
 	{
 		auto menuStatus = menu_start();
-
 		switch (menuStatus.value()) {
 		case -1:
 			return 0;
@@ -97,7 +96,6 @@ BEGIN:
 	// 游戏结束
 	{
 		auto endStatus = game_end(isWin);
-
 		switch (endStatus.value()) {
 		case -1:
 			EndBatchDraw();
@@ -109,7 +107,6 @@ BEGIN:
 			return 0;
 		}
 	}
-
 }
 
 /**
@@ -192,8 +189,7 @@ optional<int> menu_start()
 {
 	using namespace g;
 
-	bool isRun{true};
-	while (isRun) {
+	while (true) {
 		// 打印文字到屏幕
 		{
 			putimage(ui.title1.x, ui.title1.y, &title);
@@ -208,21 +204,30 @@ optional<int> menu_start()
 
 		// 获取键盘 鼠标 的 状态 位置
 		{
+			peekmessage(&key, EX_KEY);
 			peekmessage(&msg, EX_MOUSE);
-			//peekmessage(&key, EX_KEY);
 		}
 
-		// 鼠标时间判断
-		if (msg.message == WM_LBUTTONDOWN) {
-			if (msg.x > ui.buttonStart.x_l && msg.x < ui.buttonStart.x_g
-				&& msg.y > ui.buttonStart.y_l && msg.y < ui.buttonStart.y_g) {
-				cleardevice();
-				return optional<int>{1};
+		// 鼠标事件判断
+		{
+			if (msg.message == WM_LBUTTONDOWN) {
+				if (msg.x > ui.buttonStart.x_l && msg.x < ui.buttonStart.x_g
+					&& msg.y > ui.buttonStart.y_l && msg.y < ui.buttonStart.y_g) {
+					cleardevice();
+					return optional<int>{1};
+				}
+				if (msg.x > ui.buttonQuit.x_l && msg.x < ui.buttonQuit.x_g
+					&& msg.y > ui.buttonQuit.y_l && msg.y < ui.buttonQuit.y_g) {
+					cleardevice();
+					return optional<int>{-1};
+				}
 			}
-			if (msg.x > ui.buttonQuit.x_l && msg.x < ui.buttonQuit.x_g
-				&& msg.y > ui.buttonQuit.y_l && msg.y < ui.buttonQuit.y_g) {
-				cleardevice();
-				return optional<int>{-1};
+
+			if (key.message == WM_KEYDOWN) {
+				if (key.vkcode == VK_ESCAPE) {
+					cleardevice();
+					return optional<int>{-1};
+				}
 			}
 		}
 
@@ -238,12 +243,14 @@ optional<int> game_core()
 {
 	using namespace g;
 
-	mciSendString("close ../src/music/start.mp3", nullptr, 0, nullptr);
-	mciSendString("open ../src/music/start.mp3", nullptr, 0, nullptr);
-	mciSendString("play ../src/music/start.mp3 repeat", nullptr, 0, nullptr);
+	{
+		mciSendString("close ../src/music/start.mp3", nullptr, 0, nullptr);
+		mciSendString("open ../src/music/start.mp3", nullptr, 0, nullptr);
+		mciSendString("play ../src/music/start.mp3 repeat", nullptr, 0, nullptr);
+	}
 
 	while (true) {
-		auto start = chrono::system_clock::now();
+		g::start = chrono::system_clock::now();
 
 		for (int i = 0; i < 40; i++) {
 			for (int j = 0; j < 20; j++) {
@@ -255,6 +262,7 @@ optional<int> game_core()
 					solidrectangle(36 * j + 16, 36 * i + 16, 36 * j + 20, 36 * i + 20);
 			}
 		}
+
 		if (phase == 1) {
 			putimage(396, 324, &fruit[1], SRCAND);
 			putimage(396, 324, &fruit[0], SRCPAINT);
@@ -430,16 +438,19 @@ optional<int> game_core()
 		}
 
 		if (ghost[1].x % 36 == 0 && ghost[1].y % 36 == 0) {
-			if (phase == 2)
+			if (phase == 2) {
 				ghost[1].direction = ghost2Run(ghost[1].map_x, ghost[1].map_y, &ghost2_goal);
-			else
-				ghost[1].direction = ghost2(ghost[1].map_x, ghost[1].map_y, player.map_x, player.map_y, g1_track_x,
-				                            g1_track_y);
+			}
+			else {
+				ghost[1].direction = ghost2(ghost[1].map_x, ghost[1].map_y,
+				                            player.map_x, player.map_y, g1_track_x, g1_track_y);
+			}
 		}
 
 		if (ghost[2].x % 36 == 0 && ghost[2].y % 36 == 0 && phase != 2) {
-			ghost[2].direction = ghost3(ghost[2].map_x, ghost[2].map_y, player.map_x, player.map_y, &ghost[2].speed,
-			                            &ghost[2].form, &last_step_x, &last_step_y, ghost[2].direction);
+			ghost[2].direction = ghost3(ghost[2].map_x, ghost[2].map_y, player.map_x,
+			                            player.map_y, &ghost[2].speed, &ghost[2].form, &last_step_x, &last_step_y,
+			                            ghost[2].direction);
 		}
 
 
@@ -465,8 +476,8 @@ optional<int> game_core()
 		FlushBatchDraw();
 		cleardevice();
 
-		auto end = chrono::system_clock::now();
-		auto duration = chrono::duration_cast<chrono::milliseconds>(end - start);
+		g::end = chrono::system_clock::now();
+		auto duration = chrono::duration_cast<chrono::milliseconds>(g::end - g::start);
 
 		g::time += static_cast<double>(duration.count());
 
@@ -474,7 +485,6 @@ optional<int> game_core()
 			player.close = !player.close;
 			g::time = 0;
 		}
-
 	}
 }
 
@@ -511,7 +521,8 @@ optional<int> game_end(bool is_win)
 			outtextxy(300, 750, "MENU");
 			FlushBatchDraw();
 		}
-	} else {
+	}
+	else {
 		// 音乐处理
 		{
 			mciSendString("close ../src/Start.mp3", NULL, 0, NULL);
@@ -539,8 +550,10 @@ optional<int> game_end(bool is_win)
 	// 返回 menu
 	{
 		while (true) {
-			peekmessage(&g::key, EX_KEY);
-			peekmessage(&g::msg, EX_MOUSE);
+			{
+				peekmessage(&g::key, EX_KEY);
+				peekmessage(&g::msg, EX_MOUSE);
+			}
 
 			if (msg.message == WM_LBUTTONDOWN && msg.x > 292 && msg.x < 416 && msg.y > 750 && msg.y < 786) {
 				cleardevice();
@@ -553,7 +566,5 @@ optional<int> game_end(bool is_win)
 				}
 			}
 		}
-		
 	}
-
 }

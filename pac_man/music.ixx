@@ -13,18 +13,22 @@ import std;
 export
 {
     void play_music_eat();
+    void play_music_test();
+    bool play_music(const char* file_path);
 }
 
+/**
+ * @brief 播放吃豆音乐
+ */
 void play_music_eat()
 {
 	PlaySound(TEXT("../src/Eat.wav"), NULL, SND_FILENAME | SND_ASYNC);
 }
 
-
-export bool play_music(const char* file_path);
-export bool play_music2(const char* filePath);
-
-export void play_music_test()
+/**
+ * @brief 测试音乐播放
+ */
+void play_music_test()
 {
 	PlaySound(TEXT("../src/music/eason.wav"), nullptr, SND_FILENAME | SND_ASYNC);
 }
@@ -36,13 +40,6 @@ export void play_music_test()
  */
 bool play_music(const char* file_path)
 {
-    //PlaySound((LPCWSTR)file_path,nullptr, SND_FILENAME | SND_ASYNC);
-
-    return true;
-}
-
-bool play_music2(const char* filePath)
-{
 
     HMODULE module = LoadLibraryA("winmm.dll");
 
@@ -52,7 +49,7 @@ bool play_music2(const char* filePath)
     if (func_mciSendStringA == nullptr) return false;
     
     char buff[255]{ 0 }, command[100]{ 0 };
-    sprintf_s(command, 100, "open %s alias playsound_134", filePath);
+    sprintf_s(command, 100, "open %s alias playsound_134", file_path);
     func_mciSendStringA(command, buff, 254, nullptr);
     sprintf_s(command, 100, "set playsound_134 time format milliseconds");
     func_mciSendStringA(command, buff, 254, nullptr);
