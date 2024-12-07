@@ -15,22 +15,28 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="game.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="file_io.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="data.ixx">
+    <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="character.ixx">
-      <Filter>源文件</Filter>
+      <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="data.ixx">
+      <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="draw.ixx">
+      <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="file_io.ixx">
+      <Filter>头文件</Filter>
     </ClCompile>
     <ClCompile Include="music.ixx">
-      <Filter>源文件</Filter>
+      <Filter>头文件</Filter>
     </ClCompile>
     <ClCompile Include="ui.ixx">
+      <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="character.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
