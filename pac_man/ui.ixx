@@ -2,7 +2,10 @@
 
 export struct Ui
 {
-	int width{ 800 };
-	int height{ 800 };
+	struct Graph
+	{
+		int width{ 720 };
+		int height{ 840 };
+	} graph;
 } ui;
 

@@ -144,6 +144,7 @@
     <ClCompile Include="draw.ixx" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="file_io.ixx" />
+    <ClCompile Include="map.ixx" />
     <ClCompile Include="music.ixx" />
     <ClCompile Include="ui.ixx" />
   </ItemGroup>

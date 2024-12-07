@@ -23,7 +23,7 @@ export struct man
 	int y{ 0 };
 	int map_x{ 0 };
 	int map_y{ 0 };
-	int derection{ 0 };
+	int direction{ 0 };
 	int speed{ 0 };
 	bool live{ false };
 	bool close{ false };
@@ -38,7 +38,7 @@ export struct ghost
 	int y{ 0 };
 	int map_x{ 0 };
 	int map_y{ 0 };
-	int derection{ 0 };
+	int direction{ 0 };
 	int speed{ 0 };
 	int form{ 0 };
 	bool live{ false };
