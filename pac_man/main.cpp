@@ -30,7 +30,7 @@ namespace g
 
 	IMAGE man[4][2], manClose[2], enemy[2][4], enemy3[2][4], mask, title, title2, introduction[3], fruit[2], scared;
 
-	ExMessage key{0}, msg{0};
+	ExMessage key{ 0 }, msg{ 0 }, k_m{ 0 };
 
 	static bool isWin{true};
 }
@@ -38,9 +38,7 @@ namespace g
 // 函数列表
 bool init_game();
 optional<int> menu_start();
-void game_start();
 optional<int> game_core();
-void menu_end();
 optional<int> game_end(bool is_win);
 
 
@@ -204,23 +202,25 @@ optional<int> menu_start()
 
 		// 输入件判断
 		{
-			peekmessage(&msg, EX_MOUSE);
-			if (msg.message == WM_LBUTTONDOWN) {
-				if (msg.x > ui.buttonStart.x_l && msg.x < ui.buttonStart.x_g
-					&& msg.y > ui.buttonStart.y_l && msg.y < ui.buttonStart.y_g) {
+			peekmessage(&k_m, EX_KEY | EX_MOUSE);
+			if (k_m.message == WM_KEYDOWN) {
+				if (k_m.vkcode == VK_ESCAPE) {
+					cleardevice();
+					return optional<int>{-1};
+				} else if (k_m.vkcode == VK_SPACE) {
 					cleardevice();
 					return optional<int>{1};
 				}
-				if (msg.x > ui.buttonQuit.x_l && msg.x < ui.buttonQuit.x_g
-					&& msg.y > ui.buttonQuit.y_l && msg.y < ui.buttonQuit.y_g) {
-					cleardevice();
-					return optional<int>{-1};
-				}
 			}
 
-			peekmessage(&key, EX_KEY);
-			if (key.message == WM_KEYDOWN) {
-				if (key.vkcode == VK_ESCAPE) {
+			if (k_m.message == WM_LBUTTONDOWN) {
+				if (k_m.x > ui.buttonStart.x_l && k_m.x < ui.buttonStart.x_g
+					&& k_m.y > ui.buttonStart.y_l && k_m.y < ui.buttonStart.y_g) {
+					cleardevice();
+					return optional<int>{1};
+				}
+				if (k_m.x > ui.buttonQuit.x_l && k_m.x < ui.buttonQuit.x_g
+					&& k_m.y > ui.buttonQuit.y_l && k_m.y < ui.buttonQuit.y_g) {
 					cleardevice();
 					return optional<int>{-1};
 				}
@@ -272,19 +272,19 @@ optional<int> game_core()
 				ghost[2].speed = 0;
 				phase = 2;
 				num++;
-				mciSendString("close ../src/music/start.mp3", NULL, 0, NULL);
-				mciSendString("close ../src/Fruit.mp3", NULL, 0, NULL);
-				mciSendString("open ../src/Fruit.mp3", NULL, 0, NULL);
-				mciSendString("play ../src/Fruit.mp3", NULL, 0, NULL);
+				mciSendString("close ../src/music/start.mp3", nullptr, 0, nullptr);
+				mciSendString("close ../src/Fruit.mp3", nullptr, 0, nullptr);
+				mciSendString("open ../src/Fruit.mp3", nullptr, 0, nullptr);
+				mciSendString("play ../src/Fruit.mp3", nullptr, 0, nullptr);
 			}
 		}
 
 
 		if (phase == 2 && voice) {
 			voice = false;
-			mciSendString("close ../src/Stronger.mp3", NULL, 0, NULL);
-			mciSendString("open ../src/Stronger.mp3", NULL, 0, NULL);
-			mciSendString("play ../src/Stronger.mp3 repeat from 0", NULL, 0, NULL);
+			mciSendString("close ../src/Stronger.mp3", nullptr, 0, nullptr);
+			mciSendString("open ../src/Stronger.mp3", nullptr, 0, nullptr);
+			mciSendString("play ../src/Stronger.mp3 repeat from 0", nullptr, 0, nullptr);
 		}
 
 		if (num1 == 3) {
@@ -322,8 +322,11 @@ optional<int> game_core()
 					break;
 				case VK_ESCAPE:
 					return optional<int>{-1};
+				case VK_SPACE:
+					Sleep(30);
+					break;
 				default:
-					cerr << "error";
+					break;
 				}
 			}
 		}
@@ -461,9 +464,9 @@ optional<int> game_core()
 			if (ghost[i].live && phase == 2 && ghost[i].map_x == player.map_x && ghost[i].map_y == player.map_y) {
 				ghost[i].live = 0;
 				num1++;
-				mciSendString("close ../src/Ghost.mp3", NULL, 0, NULL);
-				mciSendString("open ../src/Ghost.mp3", NULL, 0, NULL);
-				mciSendString("play ../src/Ghost.mp3", NULL, 0, NULL);
+				mciSendString("close ../src/Ghost.mp3", nullptr, 0, nullptr);
+				mciSendString("open ../src/Ghost.mp3", nullptr, 0, nullptr);
+				mciSendString("play ../src/Ghost.mp3", nullptr, 0, nullptr);
 			}
 		}
 
@@ -493,6 +496,16 @@ optional<int> game_end(bool is_win)
 {
 	using namespace g;
 
+	auto end = chrono::system_clock::now();
+
+	auto elapsed = end - g::start;
+	auto seconds = chrono::duration_cast<chrono::seconds>(elapsed).count();
+	double double_seconds = static_cast<double>(seconds);
+	stringstream ss;
+	ss << double_seconds;
+	string str = ss.str();
+	const char* text = str.c_str();
+
 	// 获胜
 	if (is_win) {
 		// 音乐处理
@@ -504,6 +517,7 @@ optional<int> game_end(bool is_win)
 		}
 		// 打印到屏幕
 		{
+			auto duration = chrono::duration_cast<chrono::milliseconds>(g::end - g::start);
 			setlinecolor(WHITE);
 			settextcolor(WHITE);
 			setfillcolor(BLACK);
@@ -539,6 +553,9 @@ optional<int> game_end(bool is_win)
 			outtextxy(140, 316, "GAME OVER...");
 			settextstyle(40, 0, "Elephant");
 			outtextxy(300, 750, "MENU");
+			settextstyle(30, 0, "Elephant");
+			outtextxy(200, 700, "TIME(s): ");
+			outtextxy(300, 700, text);
 			FlushBatchDraw();
 		}
 	}
@@ -547,19 +564,24 @@ optional<int> game_end(bool is_win)
 	{
 		while (true) {
 
-			peekmessage(&g::msg, EX_MOUSE);
-			if (msg.message == WM_LBUTTONDOWN && msg.x > 292 && msg.x < 416 && msg.y > 750 && msg.y < 786) {
+			cleardevice();
+
+			peekmessage(&g::k_m, EX_KEY | EX_MOUSE);
+			if (k_m.vkcode == VK_ESCAPE) {
+				cleardevice();
+				return optional<int>{-1};
+			}
+			else if (k_m.vkcode == VK_SPACE) {
+				cleardevice();
+				//return optional<int>{1};
+			}
+
+			if (k_m.message == WM_LBUTTONDOWN &&
+				k_m.x > 292 && k_m.x < 416 && k_m.y > 750 && k_m.y < 786) {
 				cleardevice();
 				return optional<int>{1};
 			}
 
-			peekmessage(&g::key, EX_KEY);
-			if (key.message == WM_KEYDOWN) {
-				if (key.vkcode == VK_ESCAPE) {
-					return optional<int>{-1};
-				}
-			}
 		}
-
 	}
 }
