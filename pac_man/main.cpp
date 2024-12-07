@@ -202,14 +202,9 @@ optional<int> menu_start()
 			outtextxy(ui.quit.x, ui.quit.y, "  QUIT");
 		}
 
-		// 获取键盘 鼠标 的 状态 位置
+		// 输入件判断
 		{
-			peekmessage(&key, EX_KEY);
 			peekmessage(&msg, EX_MOUSE);
-		}
-
-		// 鼠标事件判断
-		{
 			if (msg.message == WM_LBUTTONDOWN) {
 				if (msg.x > ui.buttonStart.x_l && msg.x < ui.buttonStart.x_g
 					&& msg.y > ui.buttonStart.y_l && msg.y < ui.buttonStart.y_g) {
@@ -223,6 +218,7 @@ optional<int> menu_start()
 				}
 			}
 
+			peekmessage(&key, EX_KEY);
 			if (key.message == WM_KEYDOWN) {
 				if (key.vkcode == VK_ESCAPE) {
 					cleardevice();
@@ -501,10 +497,10 @@ optional<int> game_end(bool is_win)
 	if (is_win) {
 		// 音乐处理
 		{
-			mciSendString("close ../src/Stronger.mp3", NULL, 0, NULL);
-			mciSendString("close ../src/Winner.mp3", NULL, 0, NULL);
-			mciSendString("open ../src/Winner.mp3", NULL, 0, NULL);
-			mciSendString("play ../src/Winner.mp3", NULL, 0, NULL);
+			mciSendString("close ../src/Stronger.mp3", nullptr, 0, nullptr); 
+			mciSendString("close ../src/Winner.mp3", nullptr, 0, nullptr);
+			mciSendString("open ../src/Winner.mp3", nullptr, 0, nullptr);
+			mciSendString("play ../src/Winner.mp3", nullptr, 0, nullptr);
 		}
 		// 打印到屏幕
 		{
@@ -525,10 +521,10 @@ optional<int> game_end(bool is_win)
 	else {
 		// 音乐处理
 		{
-			mciSendString("close ../src/Start.mp3", NULL, 0, NULL);
-			mciSendString("close ../src/Death.mp3", NULL, 0, NULL);
-			mciSendString("open ../src/Death.mp3", NULL, 0, NULL);
-			mciSendString("play ../src/Death.mp3", NULL, 0, NULL);
+			mciSendString("close ../src/Start.mp3", nullptr, 0, nullptr);
+			mciSendString("close ../src/Death.mp3", nullptr, 0, nullptr);
+			mciSendString("open ../src/Death.mp3", nullptr, 0, nullptr);
+			mciSendString("play ../src/Death.mp3", nullptr, 0, nullptr);
 		}
 		// 打印到屏幕
 		{
@@ -550,21 +546,20 @@ optional<int> game_end(bool is_win)
 	// 返回 menu
 	{
 		while (true) {
-			{
-				peekmessage(&g::key, EX_KEY);
-				peekmessage(&g::msg, EX_MOUSE);
-			}
 
+			peekmessage(&g::msg, EX_MOUSE);
 			if (msg.message == WM_LBUTTONDOWN && msg.x > 292 && msg.x < 416 && msg.y > 750 && msg.y < 786) {
 				cleardevice();
 				return optional<int>{1};
 			}
 
+			peekmessage(&g::key, EX_KEY);
 			if (key.message == WM_KEYDOWN) {
 				if (key.vkcode == VK_ESCAPE) {
 					return optional<int>{-1};
 				}
 			}
 		}
+
 	}
 }

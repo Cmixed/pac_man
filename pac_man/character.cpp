@@ -89,7 +89,7 @@ int ghost2(int g_map_x, int g_map_y, int p_map_x, int p_map_y, int g1_track_x, i
 	init_map(map1);
 
 	map1[g1_track_y][g1_track_x] = 2;
-	int trace[400][3];
+	int trace[400][3]{ 0 };
 	int k = 0, l = 0, derection = 2;
 	trace[k][0] = g_map_x;
 	trace[k][1] = g_map_y;
@@ -135,7 +135,7 @@ int ghost2Run(int g_map_x, int g_map_y, int* ghost2_goal)
 		*ghost2_goal = 3;
 	if (g_map_x == 18 && g_map_y == 1)
 		*ghost2_goal = 0;
-	int goal[4][2];
+	int goal[4][2]{ 0 };
 	goal[0][0] = 1;
 	goal[0][1] = 1;
 	goal[1][0] = 1;
@@ -144,7 +144,7 @@ int ghost2Run(int g_map_x, int g_map_y, int* ghost2_goal)
 	goal[2][1] = 16;
 	goal[3][0] = 18;
 	goal[3][1] = 1;
-	int trace[400][3];
+	int trace[400][3]{ 0 };
 	int k = 0, l = 0, derection = 2;
 	trace[k][0] = g_map_x;
 	trace[k][1] = g_map_y;
@@ -189,7 +189,7 @@ int ghost3(int g_map_x, int g_map_y, int p_map_x, int p_map_y, int* speed, int* 
 
 	int derection = 0, now_step_x = 0, now_step_y = 0;
 	if (abs(p_map_x - g_map_x) + abs(p_map_y - g_map_y) <= 6) {
-		int trace[400][3];
+		int trace[400][3]{ 0 };
 		int k = 0, l = 0;
 		trace[k][0] = g_map_x;
 		trace[k][1] = g_map_y;
@@ -266,7 +266,7 @@ int ghost3(int g_map_x, int g_map_y, int p_map_x, int p_map_y, int* speed, int* 
 			now_step_y = g_map_y;
 		}
 		else {
-			int trace[400][3];
+			int trace[400][3]{ 0 };
 			int k = 0, l = 0;
 			trace[k][0] = g_map_x;
 			trace[k][1] = g_map_y;
