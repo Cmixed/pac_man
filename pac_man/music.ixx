@@ -10,6 +10,17 @@ export module music;
 
 import std;
 
+export
+{
+    void play_music_eat();
+}
+
+void play_music_eat()
+{
+	PlaySound(TEXT("../src/Eat.wav"), NULL, SND_FILENAME | SND_ASYNC);
+}
+
+
 export bool play_music(const char* file_path);
 export bool play_music2(const char* filePath);
 
@@ -25,7 +36,7 @@ export void play_music_test()
  */
 bool play_music(const char* file_path)
 {
-    PlaySound((LPCWSTR)file_path,nullptr, SND_FILENAME | SND_ASYNC);
+    //PlaySound((LPCWSTR)file_path,nullptr, SND_FILENAME | SND_ASYNC);
 
     return true;
 }

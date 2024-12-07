@@ -3,40 +3,24 @@
 #include "easyx/easyx.h"
 #include <Windows.h>
 #include <mmsystem.h>
+#include <chrono>
 
 import std;
 import character;
 import draw;
+import music;
 
 using namespace std;
 using namespace chrono;
 
-struct man
-{
-	int x;
-	int y;
-	int map_x;
-	int map_y;
-	int derection;
-	int speed;
-	bool live;
-	bool close;
-} player;
+ExMessage key{ 0 };
+ExMessage msg{ 0 };
 
-struct ghost
-{
-	int x;
-	int y;
-	int map_x;
-	int map_y;
-	int derection;
-	int speed;
-	int form;
-	bool live;
-} ghost[3];
+bool init_game();
+void game_start();
+optional<int> game_core();
+void game_end();
 
-ExMessage key { 0 };
-ExMessage msg { 0 };
 
 int main()
 {
@@ -67,7 +51,8 @@ TITLE:
 	int last_step_x = 1, last_step_y = 1;
 	int phase = 0, ghost2_goal = 0, shake = 1, close_time = 300, pos = 0;
 	bool voice = 1;
-	//���ؽ�ɫ
+
+
 	IMAGE man[4][2], manClose[2], enemy[2][4], enemy3[2][4], mask, title, title2, introduction[3], fruit[2], scared;
 	loadimage(&man[0][0], "../src/open0.jpg");
 	loadimage(&man[0][1], "../src/open0-mask.jpg");
@@ -125,7 +110,8 @@ TITLE:
 	ghost[2].form = 0;
 	ghost[2].live = 1;
 	BeginBatchDraw();
-	//����
+
+
 	while (true)
 	{
 		putimage(66, 66, &title);
@@ -149,15 +135,15 @@ TITLE:
 		}
 		FlushBatchDraw();
 	}
-    //��Ϸ
+    
 GAME:
 	mciSendString("close ../src/Start.mp3", NULL, 0, NULL);
 	mciSendString("open ../src/Start.mp3", NULL, 0, NULL);
 	mciSendString("play ../src/Start.mp3 repeat", NULL, 0, NULL);
 	while (true)
 	{
-		auto start = system_clock::now();
-		//���ɵ�ͼ
+		auto start = chrono::system_clock::now();
+		
 		for (int i = 0; i < 40; i++)
 		{
 			for (int j = 0; j < 20; j++)
@@ -176,7 +162,7 @@ GAME:
 			putimage(396, 324, &fruit[0], SRCPAINT);
 		}
 		putimage(0, 720, &introduction[phase]);
-		//�жϽ�����һ�׶�
+		
 		if (num == 149)
 		{
 			phase = 1;
@@ -200,6 +186,7 @@ GAME:
 			mciSendString("open ../src/Stronger.mp3", NULL, 0, NULL);
 			mciSendString("play ../src/Stronger.mp3 repeat from 0", NULL, 0, NULL);
 		}
+
 		//�ж�ʤ��
 		if (num1 == 3)
 			goto WIN;
@@ -258,8 +245,8 @@ GAME:
 			    player.y += player.speed;
 			break;
 		}
-		//ȷ����ķ���
-		for (int i = 0; i < 3; i++)
+		
+		for (int i{0}; i<3; i++)
 		{
 			switch (ghost[i].derection)
 			{
@@ -277,43 +264,35 @@ GAME:
 				break;
 			}
 		}
-		//��ʾ���
-		if (player.close == 0)
-		{
+
+
+		if (player.close == 0) {
 			putimage(player.x, player.y, &man[player.derection][1], SRCAND);
 			putimage(player.x, player.y, &man[player.derection][0], SRCPAINT);
-		}
-		else if (player.close == 1)
-		{
+		} else if (player.close == 1) {
 			putimage(player.x, player.y, &manClose[1], SRCAND);
 			putimage(player.x, player.y, &manClose[0], SRCPAINT);
 		}
-		//��ʾ��
-		if (ghost[0].live)
-		{
+		
+		if (ghost[0].live) {
 			putimage(ghost[0].x, ghost[0].y, &mask, SRCAND);
 			putimage(ghost[0].x, ghost[0].y, &enemy[0][ghost[0].derection], SRCPAINT);
 		}
-		if (ghost[1].live)
-		{
+		if (ghost[1].live) {
 			putimage(ghost[1].x, ghost[1].y, &mask, SRCAND);
 			putimage(ghost[1].x, ghost[1].y, &enemy[1][ghost[1].derection], SRCPAINT);
 		}
-		if (ghost[2].live)
-		{
-			if (phase == 2)
-			{
+		if (ghost[2].live) {
+			if (phase == 2) {
 				shake = -shake;
 				putimage(ghost[2].x, ghost[2].y + shake, &mask, SRCAND);
 				putimage(ghost[2].x, ghost[2].y + shake, &scared, SRCPAINT);
-			}
-			else
-			{
+			} else {
 				putimage(ghost[2].x, ghost[2].y, &mask, SRCAND);
 				putimage(ghost[2].x, ghost[2].y, &enemy3[ghost[2].form][ghost[2].derection], SRCPAINT);
 			}
 		}
-		//�����������λ��
+		
 		player.map_x = (player.x + 17) / 36;
 		player.map_y = (player.y + 17) / 36;
 		ghost[0].map_x = (ghost[0].x + 17) / 36;
@@ -322,39 +301,41 @@ GAME:
 		ghost[1].map_y = (ghost[1].y + 17) / 36;
 		ghost[2].map_x = (ghost[2].x + 17) / 36;
 		ghost[2].map_y = (ghost[2].y + 17) / 36;
-		//�ж�ʧ��
-		for (int i = 0; i < 3; i++)
-		{
+
+
+		for (int i{0}; i < 3; i++) {
 			if (phase != 2 && ghost[i].map_x == player.map_x && ghost[i].map_y == player.map_y)
 				goto LOSE;
 		}
-		//���Ѱ·
-		if (ghost[0].x % 36 == 0 && ghost[0].y % 36 == 0)
-		{
-			if (phase == 2)
+
+		if (ghost[0].x % 36 == 0 && ghost[0].y % 36 == 0) {
+			if (phase == 2) {
 				ghost[0].derection = ghost1Run(ghost[0].map_x, ghost[0].map_y, player.map_x, player.map_y);
-			else
+			} else {
 				ghost[0].derection = ghost1(ghost[0].map_x, ghost[0].map_y, player.map_x, player.map_y, &g1_track_x, &g1_track_y);
+			}
 		}
-		if (ghost[1].x % 36 == 0 && ghost[1].y % 36 == 0)
-		{
+
+		if (ghost[1].x % 36 == 0 && ghost[1].y % 36 == 0) {
 			if (phase == 2)
 				ghost[1].derection = ghost2Run(ghost[1].map_x, ghost[1].map_y, &ghost2_goal);
 			else
 				ghost[1].derection = ghost2(ghost[1].map_x, ghost[1].map_y, player.map_x, player.map_y, g1_track_x, g1_track_y);
 		}
-		if (ghost[2].x % 36 == 0 && ghost[2].y % 36 == 0 && phase != 2)
+
+		if (ghost[2].x % 36 == 0 && ghost[2].y % 36 == 0 && phase != 2) {
 			ghost[2].derection = ghost3(ghost[2].map_x, ghost[2].map_y, player.map_x, player.map_y, &ghost[2].speed, &ghost[2].form, &last_step_x, &last_step_y, ghost[2].derection);
-		//��ⶹ�ӱ���
-		if(map[player.map_y][player.map_x]==1)
-		{
+		}
+
+
+		if(map[player.map_y][player.map_x]==1) {
 			map[player.map_y][player.map_x] = 2;
 			num++;
-			PlaySound(TEXT("../src/Eat.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			play_music_eat();
 		}
-		//�������
-		for (int i = 0; i < 3; i++)
-		{
+
+
+		for (int i = 0; i < 3; i++) {
 			if (ghost[i].live && phase == 2 && ghost[i].map_x == player.map_x && ghost[i].map_y == player.map_y)
 			{
 				ghost[i].live = 0;
@@ -368,8 +349,8 @@ GAME:
 		Sleep(30);
 		FlushBatchDraw();
 		cleardevice();
-		auto end = system_clock::now();
-		auto duration = duration_cast<milliseconds>(end - start);
+		auto end = chrono::system_clock::now();
+		auto duration = chrono::duration_cast<chrono::milliseconds>(end - start);
 		time += double(duration.count());
 		if (time >= close_time)
 		{
@@ -433,4 +414,54 @@ WIN:
 	}
 	system("pause");
 	return 0;
+}
+
+/**
+ * 初始化游戏
+ */
+bool init_game()
+{
+
+	return true;
+}
+
+void game_start()
+{
+	
+}
+
+optional<int> game_core()
+{
+
+	return 1;
+}
+
+void game_end()
+{
+	mciSendString("close ../src/Stronger.mp3", NULL, 0, NULL);
+	mciSendString("close ../src/Winner.mp3", NULL, 0, NULL);
+	mciSendString("open ../src/Winner.mp3", NULL, 0, NULL);
+	mciSendString("play ../src/Winner.mp3", NULL, 0, NULL);
+	setlinecolor(WHITE);
+	settextcolor(WHITE);
+	setfillcolor(BLACK);
+	setlinestyle(BS_SOLID, 5);
+	roundrect(120, 300, 600, 400, 10, 10);
+	solidroundrect(120, 300, 600, 400, 10, 10);
+	solidrectangle(0, 720, 720, 840);
+	settextstyle(72, 0, "Elephant");
+	outtextxy(180, 316, "YOU WIN!!!");
+	settextstyle(40, 0, "Elephant");
+	outtextxy(300, 750, "MENU");
+	FlushBatchDraw();
+	while (true)
+	{
+		peekmessage(&msg, EX_MOUSE);
+		if (msg.message == WM_LBUTTONDOWN && msg.x > 292 && msg.x < 416 && msg.y > 750 && msg.y < 786)
+		{
+			cleardevice();
+			game_start();
+		}
+	}
+	system("pause");
 }
