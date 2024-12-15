@@ -2,10 +2,10 @@
 
 export
 {
-	bool init_map(int map[20][20], [[maybe_unused]] const int map_order = 1);
+	constexpr bool init_map(int map[20][20], [[maybe_unused]] const int map_order = 1);
 }
 
-bool init_map(int map[20][20], [[maybe_unused]] const int map_order)
+constexpr bool init_map(int map[20][20], [[maybe_unused]] const int map_order)
 {
 	constexpr int map_1[20][20] = {
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},

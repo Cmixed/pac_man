@@ -11,6 +11,7 @@ import character;
 import draw;
 import music;
 import map;
+import tool;
 
 using namespace std;
 using namespace chrono;
@@ -18,7 +19,7 @@ using namespace chrono;
 namespace g
 {
 	auto start{chrono::system_clock::now()};
-	auto end{chrono::system_clock::now()};
+	auto startTime{ chrono::system_clock::now() };
 
 	double time{0};
 	int num{0}, num1{0}, g1_track_x{0}, g1_track_y{0};
@@ -32,7 +33,9 @@ namespace g
 
 	ExMessage key{ 0 }, msg{ 0 }, k_m{ 0 };
 
-	static bool isWin{true};
+	bool isWin{true};
+	unsigned long long score{ 0 };
+
 }
 
 // 函数列表
@@ -44,8 +47,9 @@ optional<int> game_end(bool is_win);
 
 int main(int argc, char* argv[])
 {
-BEGIN:
 	using namespace g;
+
+BEGIN:
 
 	// 确保正确初始化
 	try {
@@ -76,6 +80,7 @@ BEGIN:
 
 	// 游戏主程序
 	{
+		g::startTime = chrono::system_clock::now();
 		auto gameStatue = game_core();
 		switch (gameStatue.value()) {
 		case -1:
@@ -245,8 +250,11 @@ optional<int> game_core()
 		mciSendString("play ../src/music/start.mp3 repeat", nullptr, 0, nullptr);
 	}
 
+
 	while (true) {
+
 		g::start = chrono::system_clock::now();
+		
 
 		for (int i = 0; i < 40; i++) {
 			for (int j = 0; j < 20; j++) {
@@ -471,18 +479,22 @@ optional<int> game_core()
 		}
 
 		// 每次渲染间隔时间
-		Sleep(30);
-		FlushBatchDraw();
-		cleardevice();
+		{
+			Sleep(30);
+			FlushBatchDraw();
+			cleardevice();
 
-		g::end = chrono::system_clock::now();
-		auto duration = chrono::duration_cast<chrono::milliseconds>(g::end - g::start);
+			auto end = chrono::system_clock::now();
+			auto duration = chrono::duration_cast<chrono::milliseconds>(end - g::start);
 
-		g::time += static_cast<double>(duration.count());
+			g::time += static_cast<double>(duration.count());
 
-		if (g::time >= close_time) {
-			player.close = !player.close;
-			g::time = 0;
+			if (g::time >= close_time) {
+				player.close = !player.close;
+				g::time = 0;
+			}
+			g::score++;
+			cout << score << '\n';
 		}
 	}
 }
@@ -496,15 +508,8 @@ optional<int> game_end(bool is_win)
 {
 	using namespace g;
 
-	auto end = chrono::system_clock::now();
-
-	auto elapsed = end - g::start;
-	auto seconds = chrono::duration_cast<chrono::seconds>(elapsed).count();
-	double double_seconds = static_cast<double>(seconds);
-	stringstream ss;
-	ss << double_seconds;
-	string str = ss.str();
-	const char* text = str.c_str();
+	auto text = std::string(cast2String(g::score)).c_str();
+	std::cout << "Final Score:" << text;
 
 	// 获胜
 	if (is_win) {
@@ -517,7 +522,6 @@ optional<int> game_end(bool is_win)
 		}
 		// 打印到屏幕
 		{
-			auto duration = chrono::duration_cast<chrono::milliseconds>(g::end - g::start);
 			setlinecolor(WHITE);
 			settextcolor(WHITE);
 			setfillcolor(BLACK);
@@ -554,7 +558,7 @@ optional<int> game_end(bool is_win)
 			settextstyle(40, 0, "Elephant");
 			outtextxy(300, 750, "MENU");
 			settextstyle(30, 0, "Elephant");
-			outtextxy(200, 700, "TIME(s): ");
+			outtextxy(200, 700, "SCORE: ");
 			outtextxy(300, 700, text);
 			FlushBatchDraw();
 		}

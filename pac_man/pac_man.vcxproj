@@ -146,6 +146,7 @@
     <ClCompile Include="file_io.ixx" />
     <ClCompile Include="map.ixx" />
     <ClCompile Include="music.ixx" />
+    <ClCompile Include="tool.ixx" />
     <ClCompile Include="ui.ixx" />
   </ItemGroup>
   <ItemGroup>

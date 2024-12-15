@@ -42,6 +42,9 @@
     <ClCompile Include="map.ixx">
       <Filter>头文件</Filter>
     </ClCompile>
+    <ClCompile Include="tool.ixx">
+      <Filter>头文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="pac_man.rc">
