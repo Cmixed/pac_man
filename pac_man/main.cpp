@@ -34,7 +34,6 @@ namespace g
 	ExMessage key{ 0 }, msg{ 0 }, k_m{ 0 };
 
 	bool isWin{true};
-	unsigned long long score{ 0 };
 
 }
 
@@ -42,7 +41,7 @@ namespace g
 bool init_game();
 optional<int> menu_start();
 optional<int> game_core();
-optional<int> game_end(bool is_win);
+optional<int> game_end(bool is_win, unsigned long long score);
 
 
 int main(int argc, char* argv[])
@@ -63,6 +62,11 @@ BEGIN:
 		return 0;
 	}
 
+	// 根据难度调整
+	{
+		
+	}
+
 	BeginBatchDraw();
 
 	// 开始菜单
@@ -78,12 +82,33 @@ BEGIN:
 		}
 	}
 
+	unsigned long long score{ 600 };
+	bool is_exit{ false };
+	std::mutex m;
+	std::thread score_t([&]()
+	{
+		std::unique_lock<std::mutex> lock(m);
+		while (true) {
+			this_thread::sleep_for(100ms);
+			score++;
+			if (is_exit) {
+				score /= 60;
+				break;
+			}
+		}
+	});
+
+	//std::cout << "Line101:" << score << '\n';
+
 	// 游戏主程序
 	{
 		g::startTime = chrono::system_clock::now();
 		auto gameStatue = game_core();
 		switch (gameStatue.value()) {
 		case -1:
+			is_exit = true;
+			score_t.join();
+			//std::cout << "Line111:" << score << '\n';
 			return 0;
 		case 1:
 			isWin = false;
@@ -96,9 +121,14 @@ BEGIN:
 		}
 	}
 
-	// 游戏结束
+	is_exit = true;
+	score_t.join();
+
+	//std::cout << "Line127:" << score << '\n';
+
+	// 游戏结束状态判定
 	{
-		auto endStatus = game_end(isWin);
+		auto endStatus = game_end(isWin, score);
 		switch (endStatus.value()) {
 		case -1:
 			EndBatchDraw();
@@ -254,7 +284,6 @@ optional<int> game_core()
 	while (true) {
 
 		g::start = chrono::system_clock::now();
-		
 
 		for (int i = 0; i < 40; i++) {
 			for (int j = 0; j < 20; j++) {
@@ -493,8 +522,6 @@ optional<int> game_core()
 				player.close = !player.close;
 				g::time = 0;
 			}
-			g::score++;
-			cout << score << '\n';
 		}
 	}
 }
@@ -504,12 +531,14 @@ optional<int> game_core()
  * @param is_win 是否获胜
  * @return 继续 1 退出 -1
  */
-optional<int> game_end(bool is_win)
+optional<int> game_end(bool is_win, unsigned long long score)
 {
 	using namespace g;
 
-	auto text = std::string(cast2String(g::score)).c_str();
-	std::cout << "Final Score:" << text;
+	auto temp_text = std::string(cast2String(score)).c_str();
+
+	std::cout << "Final Score:" << temp_text << '\n';
+	auto text = LPCTSTR(temp_text);
 
 	// 获胜
 	if (is_win) {
