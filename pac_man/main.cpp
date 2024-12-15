@@ -82,7 +82,7 @@ BEGIN:
 		}
 	}
 
-	unsigned long long score{ 600 };
+	unsigned long long score{ 0 };
 	bool is_exit{ false };
 	std::mutex m;
 	std::thread score_t([&]()
@@ -92,13 +92,12 @@ BEGIN:
 			this_thread::sleep_for(100ms);
 			score++;
 			if (is_exit) {
-				score /= 60;
+				score /= 10;
 				break;
 			}
 		}
 	});
 
-	//std::cout << "Line101:" << score << '\n';
 
 	// 游戏主程序
 	{
@@ -108,7 +107,6 @@ BEGIN:
 		case -1:
 			is_exit = true;
 			score_t.join();
-			//std::cout << "Line111:" << score << '\n';
 			return 0;
 		case 1:
 			isWin = false;
@@ -124,7 +122,6 @@ BEGIN:
 	is_exit = true;
 	score_t.join();
 
-	//std::cout << "Line127:" << score << '\n';
 
 	// 游戏结束状态判定
 	{
@@ -535,10 +532,8 @@ optional<int> game_end(bool is_win, unsigned long long score)
 {
 	using namespace g;
 
-	auto temp_text = std::string(cast2String(score)).c_str();
-
-	std::cout << "Final Score:" << temp_text << '\n';
-	auto text = LPCTSTR(temp_text);
+	auto temp_text = cast2String(score);
+	const char * text = temp_text.c_str();
 
 	// 获胜
 	if (is_win) {
@@ -562,6 +557,9 @@ optional<int> game_end(bool is_win, unsigned long long score)
 			outtextxy(180, 316, "YOU WIN!!!");
 			settextstyle(40, 0, "Elephant");
 			outtextxy(300, 750, "MENU");
+			settextstyle(35, 0,"Elephant");
+			outtextxy(250, 700, "SCORE: ");
+			outtextxy(380, 700, _T(text));
 			FlushBatchDraw();
 		}
 	}
@@ -586,9 +584,9 @@ optional<int> game_end(bool is_win, unsigned long long score)
 			outtextxy(140, 316, "GAME OVER...");
 			settextstyle(40, 0, "Elephant");
 			outtextxy(300, 750, "MENU");
-			settextstyle(30, 0, "Elephant");
-			outtextxy(200, 700, "SCORE: ");
-			outtextxy(300, 700, text);
+			settextstyle(35, 0, "Elephant");
+			outtextxy(250, 700, "SCORE: ");
+			outtextxy(380, 700, _T(text));
 			FlushBatchDraw();
 		}
 	}
