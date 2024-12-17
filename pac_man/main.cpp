@@ -12,6 +12,7 @@ import draw;
 import music;
 import map;
 import tool;
+import file_io;
 
 using namespace std;
 using namespace chrono;
@@ -49,6 +50,14 @@ int main(int argc, char* argv[])
 	using namespace g;
 
 BEGIN:
+
+	
+	PacRecord p{
+		.m_time_s = 1.234,
+		.score = 12345,
+	};
+
+	fileWrite(p);
 
 	// 确保正确初始化
 	try {
