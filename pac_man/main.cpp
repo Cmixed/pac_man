@@ -20,8 +20,8 @@ using namespace chrono;
 namespace g
 {
 	// 设置目标帧率
-	const unsigned long Target_FPS{ 60 };
-	const unsigned long Skill_Time{ (1000 / Target_FPS) * 2 };
+	static unsigned long Target_FPS{ 60 };
+	static unsigned long Skill_Time{ (1000 / Target_FPS) * 2 };
 
 	auto start{chrono::system_clock::now()};
 
@@ -550,13 +550,11 @@ optional<int> game_core()
 			// 计时
 			{
 				auto endTime = chrono::system_clock::now();
-				auto duration = (endTime - g::start);
-				auto seconds = chrono::duration_cast<chrono::seconds>(duration).count();
-				const auto time_text = cast2String(seconds);
-				const char* text_time = time_text.c_str();
+				auto duration = timeDifferenceInSeconds(g::start, endTime);
+				const char* time = duration.c_str();
 				settextstyle(30, 0, "Elephant");
 				outtextxy(10, 10, "TIME(s): ");
-				outtextxy(140, 10, _T(text_time));
+				outtextxy(140, 10, _T(time));
 			}
 		}
 
@@ -577,14 +575,12 @@ optional<int> game_end(bool is_win, unsigned long long score)
 	const char * text = temp_text.c_str();
 
 	auto endTime = chrono::system_clock::now();
-	auto duration = (endTime - g::start);
-	auto seconds = chrono::duration_cast<chrono::seconds>(duration).count();
-	const auto time_text = cast2String(seconds);
-	const char* text_time = time_text.c_str();
+	auto duration = timeDifferenceInSeconds(g::start, endTime);
+	const char* time = duration.c_str();
 
 	// 将对局信息写入文件
 	{
-		auto record = PacRecord{ time_text, score };
+		auto record = PacRecord{ duration, score };
 		fileWrite(record);
 	}
 
@@ -606,13 +602,18 @@ optional<int> game_end(bool is_win, unsigned long long score)
 			roundrect(120, 300, 600, 400, 10, 10);
 			solidroundrect(120, 300, 600, 400, 10, 10);
 			solidrectangle(0, 720, 720, 840);
+			  
 			settextstyle(72, 0, "Elephant");
 			outtextxy(180, 316, "YOU WIN!!!");
 			settextstyle(40, 0, "Elephant");
 			outtextxy(300, 750, "MENU");
-			settextstyle(35, 0,"Elephant");
-			outtextxy(250, 700, "SCORE: ");
-			outtextxy(380, 700, _T(text));
+
+			settextstyle(35, 0, "Elephant");
+			outtextxy(10, 740, "TIME(s): ");
+			outtextxy(140, 740, _T(time));
+			settextstyle(35, 0, "Elephant");
+			outtextxy(10, 790, "SCORE: ");
+			outtextxy(140, 790, _T(text));
 			FlushBatchDraw();
 		}
 	}
@@ -641,7 +642,7 @@ optional<int> game_end(bool is_win, unsigned long long score)
 
 			settextstyle(35, 0, "Elephant");
 			outtextxy(10, 740, "TIME(s): ");
-			outtextxy(140, 740, _T(text_time));
+			outtextxy(140, 740, _T(time));
 			settextstyle(35, 0, "Elephant");
 			outtextxy(10, 790, "SCORE: ");
 			outtextxy(140, 790, _T(text));

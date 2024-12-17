@@ -7,29 +7,41 @@ import std;
 
 export
 {
-	std::string timeDifferenceInSeconds(const std::chrono::time_point<std::chrono::system_clock>& t1,
-    const std::chrono::time_point<std::chrono::system_clock>& t2);
+	std::string timeDifferenceInSeconds(const std::chrono::time_point<std::chrono::system_clock>& begin,
+    const std::chrono::time_point<std::chrono::system_clock>& end);
 
     template<std::integral T>
-    std::string cast2String(T x);
+    std::string cast2String(T const x);
 
     unsigned int targetFPS(const unsigned int target_fps);
 }
 
-std::string timeDifferenceInSeconds(const std::chrono::time_point<std::chrono::system_clock>& t1,
-    const std::chrono::time_point<std::chrono::system_clock>& t2) {
+/**
+ * @brief 计算两个时间点的差值，并转化为字符串
+ * @param t1 
+ * @param t2 
+ * @return 
+ */
+std::string timeDifferenceInSeconds(const std::chrono::time_point<std::chrono::system_clock>& begin,
+                                    const std::chrono::time_point<std::chrono::system_clock>& end) {
         // 计算两个时间点的差值
-        auto duration = std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count();
-        
+        auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - begin).count();
+
         // 将差值转换为字符串
         std::stringstream ss;
 		
-        ss << duration << " seconds";
+        ss << duration; // seconds
         return ss.str();
     }
 
+/**
+ * @brief 将整数转换为 string 类型
+ * @tparam T 
+ * @param x 
+ * @return 
+ */
 template<std::integral T>
-std::string cast2String(T x)
+std::string cast2String(T const x)
 {
     std::stringstream ss;
     ss << x;
@@ -37,7 +49,11 @@ std::string cast2String(T x)
     return ss.str();
 }
 
-
+/**
+ * @brief 延迟每帧时间
+ * @param target_fps 
+ * @return now fps order
+ */
 unsigned int targetFPS(const unsigned int target_fps)
 {
     static unsigned long preFpsTime{ 0 };
@@ -49,8 +65,6 @@ unsigned int targetFPS(const unsigned int target_fps)
 		preFpsTime = (1000 / target_fps);
         Sleep(preFpsTime);
     }
-
-    preFps = ((++preFps) /= target_fps);
 
     return preFps;
 }
