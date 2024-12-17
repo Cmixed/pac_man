@@ -18,7 +18,7 @@ const int RECORD_NUMBER = 100;  // 读取记录数的上限
 // 吃豆人记录格式
 export struct PacRecord
 {
-    double m_time_s{ 0 };
+    std::string m_time_s{ 0 };
     unsigned long long score{ 0 };
 };
 
@@ -74,7 +74,7 @@ optional<int> fileWrite(const PacRecord& record)
 	    auto [time_cost, player_score] = record;
 
 	    fout << format("{: >4} : ", lineNumber) << std::put_time(&nowTm, "%Y-%m-%d %H:%M:%S")
-    		<< format(" : Time cost: {}, Score: {}\n", time_cost, player_score);
+    		<< format(" : Time cost: {}s, Score: {}\n", time_cost, player_score);
 
         // 更新行数
 		++lineNumber;

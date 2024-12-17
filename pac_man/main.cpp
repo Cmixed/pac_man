@@ -20,8 +20,8 @@ using namespace chrono;
 namespace g
 {
 	// 设置目标帧率
-	constexpr unsigned long Target_FPS{ 60 };
-	constexpr unsigned long Skill_Time{ (1000 / Target_FPS) * 2 };
+	const unsigned long Target_FPS{ 60 };
+	const unsigned long Skill_Time{ (1000 / Target_FPS) * 2 };
 
 	auto start{chrono::system_clock::now()};
 
@@ -33,7 +33,7 @@ namespace g
 
 	int map[20][20]{0};
 
-	IMAGE man[4][2], manClose[2], enemy[2][4], enemy3[2][4], mask, title, title2, introduction[3], fruit[2], scared;
+	IMAGE startbk, bk, man[4][2], manClose[2], enemy[2][4], enemy3[2][4], mask, title, title2, introduction[3], fruit[2], scared;
 
 	ExMessage key{ 0 }, msg{ 0 }, k_m{ 0 };
 
@@ -127,7 +127,6 @@ BEGIN:
 	is_exit = true;
 	score_t.join();
 
-
 	// 游戏结束 && 状态判定
 	{
 		auto endStatus = game_end(isWin, score);
@@ -156,6 +155,8 @@ bool init_game()
 	init_map(g::map);
 
 	// 加载美术资源
+	loadimage(&g::startbk , "../src/startbk.jpg");
+	loadimage(&g::bk, "../src/bk.jpg");
 	loadimage(&g::man[0][0], "../src/open0.jpg");
 	loadimage(&g::man[0][1], "../src/open0-mask.jpg");
 	loadimage(&g::man[1][0], "../src/open1.jpg");
@@ -227,6 +228,8 @@ optional<int> menu_start()
 	while (true) {
 		// 打印文字到屏幕
 		{
+			putimage(0, 0, &g::startbk);
+
 			putimage(ui.title1.x, ui.title1.y, &title);
 			putimage(ui.title2.x, ui.title2.y, &title2);
 
@@ -282,14 +285,15 @@ optional<int> game_core()
 		mciSendString("play ../src/music/start.mp3 repeat", nullptr, 0, nullptr);
 	}
 
+	g::start = chrono::system_clock::now();
 
 	while (true) {
 
-		g::start = chrono::system_clock::now();
+		putimage(0, 0, &g::bk);
 
 		for (int i = 0; i < 40; i++) {
 			for (int j = 0; j < 20; j++) {
-				setfillcolor(BLUE);
+				setfillcolor(DARKGRAY);
 				if (g::map[i][j] != 0)
 					solidrectangle(36 * j, 36 * i, 36 * j + 36, 36 * i + 36);
 				setfillcolor(WHITE);
@@ -331,7 +335,6 @@ optional<int> game_core()
 
 		// 处理键盘事件
 		{
-			constexpr int skillFps = Target_FPS / 4;
 
 			peekmessage(&key, EX_KEY);
 			if (key.message == WM_KEYDOWN) {
@@ -544,6 +547,17 @@ optional<int> game_core()
 				}
 			}
 
+			// 计时
+			{
+				auto endTime = chrono::system_clock::now();
+				auto duration = (endTime - g::start);
+				auto seconds = chrono::duration_cast<chrono::seconds>(duration).count();
+				const auto time_text = cast2String(seconds);
+				const char* text_time = time_text.c_str();
+				settextstyle(30, 0, "Elephant");
+				outtextxy(10, 10, "TIME(s): ");
+				outtextxy(140, 10, _T(text_time));
+			}
 		}
 
 	}
@@ -559,12 +573,18 @@ optional<int> game_end(bool is_win, unsigned long long score)
 	using namespace g;
 
 	score += g::eatNumber;
-	auto temp_text = cast2String(score);
+	const auto temp_text = cast2String(score);
 	const char * text = temp_text.c_str();
+
+	auto endTime = chrono::system_clock::now();
+	auto duration = (endTime - g::start);
+	auto seconds = chrono::duration_cast<chrono::seconds>(duration).count();
+	const auto time_text = cast2String(seconds);
+	const char* text_time = time_text.c_str();
 
 	// 将对局信息写入文件
 	{
-		auto record = PacRecord{ 1, score };
+		auto record = PacRecord{ time_text, score };
 		fileWrite(record);
 	}
 
@@ -613,13 +633,18 @@ optional<int> game_end(bool is_win, unsigned long long score)
 			roundrect(120, 300, 600, 400, 10, 10);
 			solidroundrect(120, 300, 600, 400, 10, 10);
 			solidrectangle(0, 720, 720, 840);
+
 			settextstyle(72, 0, "Elephant");
 			outtextxy(140, 316, "GAME OVER...");
 			settextstyle(40, 0, "Elephant");
 			outtextxy(300, 750, "MENU");
+
 			settextstyle(35, 0, "Elephant");
-			outtextxy(250, 700, "SCORE: ");
-			outtextxy(380, 700, _T(text));
+			outtextxy(10, 740, "TIME(s): ");
+			outtextxy(140, 740, _T(text_time));
+			settextstyle(35, 0, "Elephant");
+			outtextxy(10, 790, "SCORE: ");
+			outtextxy(140, 790, _T(text));
 			FlushBatchDraw();
 		}
 	}
