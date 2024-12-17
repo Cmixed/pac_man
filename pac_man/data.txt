@@ -13,3 +13,13 @@ Game Start Time(Local): 2024-12-17 20:04:56
    1 : 2024-12-17 20:04:56 : Time cost: 1, Score: 8
 Game Start Time(Local): 2024-12-17 20:09:40
    1 : 2024-12-17 20:09:40 : Time cost: 1, Score: 7
+Game Start Time(Local): 2024-12-17 20:14:56
+   1 : 2024-12-17 20:14:56 : Time cost: 1, Score: 22
+Game Start Time(Local): 2024-12-17 20:24:35
+   1 : 2024-12-17 20:24:35 : Time cost: 1, Score: 91
+Game Start Time(Local): 2024-12-17 20:26:43
+   1 : 2024-12-17 20:26:43 : Time cost: 1, Score: 29
+Game Start Time(Local): 2024-12-17 20:43:23
+   1 : 2024-12-17 20:43:23 : Time cost: 1, Score: 35
+Game Start Time(Local): 2024-12-17 20:43:55
+   1 : 2024-12-17 20:43:55 : Time cost: 1, Score: 76

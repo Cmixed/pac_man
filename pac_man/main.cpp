@@ -21,14 +21,14 @@ namespace g
 {
 	// 设置目标帧率
 	constexpr unsigned long Target_FPS{ 60 };
+	constexpr unsigned long Skill_Time{ (1000 / Target_FPS) * 2 };
 
 	auto start{chrono::system_clock::now()};
-	auto startTime{ chrono::system_clock::now() };
 
 	double time{0};
 	int num{0}, num1{0}, g1_track_x{0}, g1_track_y{0};
 	int last_step_x{1}, last_step_y{1};
-	int phase{0}, ghost2_goal{0}, shake{1}, close_time{300}, pos{0};
+	int phase{0}, ghost2_goal{0}, shake{1}, pos{0};
 	bool voice{true};
 
 	int map[20][20]{0};
@@ -37,7 +37,8 @@ namespace g
 
 	ExMessage key{ 0 }, msg{ 0 }, k_m{ 0 };
 
-	bool isWin{true};
+	bool isWin{true}, isEat{false}, isSkilled{false};
+	unsigned int eatNumber{ 0 };
 
 }
 
@@ -105,7 +106,7 @@ BEGIN:
 
 	// 游戏主程序
 	{
-		g::startTime = chrono::system_clock::now();
+		g::start = chrono::system_clock::now();
 		auto gameStatue = game_core();
 		switch (gameStatue.value()) {
 		case -1:
@@ -306,7 +307,6 @@ optional<int> game_core()
 		if (num == 149) {
 			phase = 1;
 			if (player.map_y == 9 && player.map_x == 11) {
-				close_time = 100;
 				ghost[2].speed = 0;
 				phase = 2;
 				num++;
@@ -331,6 +331,8 @@ optional<int> game_core()
 
 		// 处理键盘事件
 		{
+			constexpr int skillFps = Target_FPS / 4;
+
 			peekmessage(&key, EX_KEY);
 			if (key.message == WM_KEYDOWN) {
 				switch (key.vkcode) {
@@ -361,7 +363,7 @@ optional<int> game_core()
 				case VK_ESCAPE:
 					return optional<int>{-1};
 				case VK_SPACE:
-					Sleep(30);
+					g::isSkilled = true;
 					break;
 				default:
 					break;
@@ -490,13 +492,15 @@ optional<int> game_core()
 			                            ghost[2].direction);
 		}
 
-
 		if (g::map[player.map_y][player.map_x] == 1) {
 			g::map[player.map_y][player.map_x] = 2;
 			num++;
-			play_music_eat();
+			{
+				play_music_eat();
+				g::isEat = true;
+				++g::eatNumber;
+			}
 		}
-
 
 		for (int i = 0; i < 3; i++) {
 			if (ghost[i].live && phase == 2 && ghost[i].map_x == player.map_x && ghost[i].map_y == player.map_y) {
@@ -512,6 +516,18 @@ optional<int> game_core()
 		{
 			auto nowFps = targetFPS(g::Target_FPS);
 
+			static unsigned int calSkllFps{ 0 };
+
+			if (isSkilled) {
+				if (calSkllFps <= 30) {
+					Sleep(g::Skill_Time);
+					++calSkllFps;
+				} else {
+					calSkllFps = 0;
+					g::isSkilled = false;
+				}
+			}
+
 			FlushBatchDraw();
 			cleardevice();
 
@@ -521,9 +537,10 @@ optional<int> game_core()
 			// 刷新主角状态
 			if (nowFps == 0) {
 				++calFps;
-				if (calFps == changeCal) {
+				if (g::isEat == true && calFps >= changeCal) {
 					player.close = !player.close;
 					calFps = 0;
+					g::isEat = false;
 				}
 			}
 
@@ -541,6 +558,7 @@ optional<int> game_end(bool is_win, unsigned long long score)
 {
 	using namespace g;
 
+	score += g::eatNumber;
 	auto temp_text = cast2String(score);
 	const char * text = temp_text.c_str();
 
