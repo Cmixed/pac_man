@@ -19,6 +19,9 @@ using namespace chrono;
 
 namespace g
 {
+	// 设置目标帧率
+	constexpr unsigned long Target_FPS{ 60 };
+
 	auto start{chrono::system_clock::now()};
 	auto startTime{ chrono::system_clock::now() };
 
@@ -50,14 +53,6 @@ int main(int argc, char* argv[])
 	using namespace g;
 
 BEGIN:
-
-	
-	PacRecord p{
-		.m_time_s = 1.234,
-		.score = 12345,
-	};
-
-	fileWrite(p);
 
 	// 确保正确初始化
 	try {
@@ -132,7 +127,7 @@ BEGIN:
 	score_t.join();
 
 
-	// 游戏结束状态判定
+	// 游戏结束 && 状态判定
 	{
 		auto endStatus = game_end(isWin, score);
 		switch (endStatus.value()) {
@@ -513,22 +508,27 @@ optional<int> game_core()
 			}
 		}
 
-		// 每次渲染间隔时间
+		// 控制每帧更新
 		{
-			Sleep(30);
+			auto nowFps = targetFPS(g::Target_FPS);
+
 			FlushBatchDraw();
 			cleardevice();
 
-			auto end = chrono::system_clock::now();
-			auto duration = chrono::duration_cast<chrono::milliseconds>(end - g::start);
+			constexpr unsigned int changeCal{ 15 };
+			static int calFps{ 0 };
 
-			g::time += static_cast<double>(duration.count());
-
-			if (g::time >= close_time) {
-				player.close = !player.close;
-				g::time = 0;
+			// 刷新主角状态
+			if (nowFps == 0) {
+				++calFps;
+				if (calFps == changeCal) {
+					player.close = !player.close;
+					calFps = 0;
+				}
 			}
+
 		}
+
 	}
 }
 
@@ -543,6 +543,12 @@ optional<int> game_end(bool is_win, unsigned long long score)
 
 	auto temp_text = cast2String(score);
 	const char * text = temp_text.c_str();
+
+	// 将对局信息写入文件
+	{
+		auto record = PacRecord{ 1, score };
+		fileWrite(record);
+	}
 
 	// 获胜
 	if (is_win) {

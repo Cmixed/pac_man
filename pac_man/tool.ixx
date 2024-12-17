@@ -3,6 +3,7 @@
 export module tool;
 
 import std;
+#include <easyx/easyx.h>
 
 export
 {
@@ -11,6 +12,8 @@ export
 
     template<std::integral T>
     std::string cast2String(T x);
+
+    unsigned int targetFPS(const unsigned int target_fps);
 }
 
 std::string timeDifferenceInSeconds(const std::chrono::time_point<std::chrono::system_clock>& t1,
@@ -32,4 +35,22 @@ std::string cast2String(T x)
     ss << x;
 
     return ss.str();
+}
+
+
+unsigned int targetFPS(const unsigned int target_fps)
+{
+    static unsigned long preFpsTime{ 0 };
+    static unsigned int preFps{ 0 };
+
+    if (preFpsTime != 0) {
+	    Sleep(preFpsTime);
+    } else {
+		preFpsTime = (1000 / target_fps);
+        Sleep(preFpsTime);
+    }
+
+    preFps = ((++preFps) /= target_fps);
+
+    return preFps;
 }
