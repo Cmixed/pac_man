@@ -34,8 +34,6 @@ namespace g
 
 	IMAGE startbk, bk, man[4][2], manClose[2], enemy[2][4], enemy3[2][4], mask, title, title2, introduction[3], fruit[2], scared;
 
-	ExMessage key{ 0 }, msg{ 0 }, k_m{ 0 };
-
 	bool isWin{true}, isEat{false}, isSkilled{false};
 	unsigned int eatNumber{ 0 };
 
@@ -43,7 +41,7 @@ namespace g
 
 // 函数列表
 bool init_game();
-optional<int> menu_game();
+optional<int> menu_pause();
 optional<int> menu_start();
 optional<int> game_core();
 optional<int> game_end(bool is_win, unsigned long long score);
@@ -75,7 +73,6 @@ BEGIN:
 
 	// 开始菜单
 	{
-		//auto menuStatus = menu_start();
 		switch (menu_start().value()) {
 		case -1:
 			return 0;
@@ -102,10 +99,10 @@ BEGIN:
 		}
 	});
 
+	GAME:
 
 	// 游戏主程序
 	{
-		//g::start = chrono::system_clock::now();
 		switch (game_core().value()) {
 		case -1:
 			is_exit = true;
@@ -219,18 +216,25 @@ bool init_game()
  * @param
  * @return 返回 1 退出 -1
  */
-optional<int> menu_game()
+optional<int> menu_pause()
 {
 	using namespace g;
 
-	// 打印到屏幕
+	auto begin{ chrono::system_clock::now() };
 
 	// 返回 menu
-	{
-		while (true) {
+	while (true) {
 
-			cleardevice();
+		{
+			static bool is_first{ true };
+			auto end{ chrono::system_clock::now() };
+			if (((end-begin) >= 5s) && is_first) {
+				play_music_pause();
+				is_first = false;
+			}
+		}
 
+		// 打印到屏幕
 		{
 			setlinecolor(WHITE);
 			settextcolor(WHITE);
@@ -241,21 +245,19 @@ optional<int> menu_game()
 			solidrectangle(0, 720, 720, 840);
 
 			settextstyle(72, 0, "Elephant");
-			outtextxy(140, 316, "P A U S E");
+			outtextxy(140, 316, "  P A U S E  ");
 			settextstyle(40, 0, "Elephant");
 			outtextxy(300, 750, "RETURN");
 		}
 
-
-			peekmessage(&g::k_m, EX_KEY | EX_MOUSE);
-
+		ExMessage k_m{ 0 };
+		peekmessage(&k_m, EX_KEY | EX_MOUSE);
+		{
 			if (k_m.vkcode == VK_ESCAPE) {
-				cleardevice();
 				return optional<int>{-1};
 			}
-			else if (k_m.vkcode == VK_SPACE) {
-				cleardevice();
-				//return optional<int>{1};
+			if (k_m.vkcode == VK_SPACE) {
+				return optional<int>{1};
 			}
 
 			if (k_m.message == WM_LBUTTONDOWN &&
@@ -265,6 +267,10 @@ optional<int> menu_game()
 			}
 
 		}
+
+		targetFPS(Target_FPS);
+		FlushBatchDraw();
+		
 	}
 }
 
@@ -293,6 +299,7 @@ optional<int> menu_start()
 
 		// 输入件判断
 		{
+			ExMessage k_m{ 0 };
 			peekmessage(&k_m, EX_KEY | EX_MOUSE);
 			if (k_m.message == WM_KEYDOWN) {
 				if (k_m.vkcode == VK_ESCAPE) {
@@ -386,7 +393,7 @@ optional<int> game_core()
 
 		// 处理键盘事件
 		{
-
+			ExMessage key{ 0 };
 			peekmessage(&key, EX_KEY);
 			if (key.message == WM_KEYDOWN) {
 				switch (key.vkcode) {
@@ -416,16 +423,16 @@ optional<int> game_core()
 					break;
 				case 'P':
 					{
-						auto pauseStatus = menu_game();
-						switch (pauseStatus.value()) {
+						switch (menu_pause().value()) {
 						case -1:
 							return optional<int>{-1};
 						case 1:
 							break;
 						default:
-							return optional<int>{-1};
+							break;
 						}
 					}
+					break;
 				case VK_ESCAPE:
 					return optional<int>{-1};
 				case VK_SPACE:
@@ -594,9 +601,6 @@ optional<int> game_core()
 				}
 			}
 
-			FlushBatchDraw();
-			cleardevice();
-
 			constexpr unsigned int changeCal{ 15 };
 			static int calFps{ 0 };
 
@@ -619,6 +623,9 @@ optional<int> game_core()
 				outtextxy(10, 10, "TIME(s): ");
 				outtextxy(140, 10, _T(time));
 			}
+
+			FlushBatchDraw();
+			cleardevice();
 		}
 
 	}
@@ -719,22 +726,22 @@ optional<int> game_end(bool is_win, unsigned long long score)
 
 			cleardevice();
 
-			peekmessage(&g::k_m, EX_KEY | EX_MOUSE);
+			ExMessage k_m{ 0 };
+			peekmessage(&k_m, EX_KEY | EX_MOUSE);
+
 			if (k_m.vkcode == VK_ESCAPE) {
-				cleardevice();
 				return optional<int>{-1};
 			}
-			else if (k_m.vkcode == VK_SPACE) {
-				cleardevice();
-				//return optional<int>{1};
+			if (k_m.vkcode == VK_SPACE) {
+				return optional<int>{1};
 			}
 
 			if (k_m.message == WM_LBUTTONDOWN &&
 				k_m.x > 292 && k_m.x < 416 && k_m.y > 750 && k_m.y < 786) {
-				cleardevice();
 				return optional<int>{1};
 			}
 
+			targetFPS(Target_FPS);
 		}
 	}
 }

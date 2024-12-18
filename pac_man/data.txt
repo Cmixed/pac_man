@@ -3,3 +3,41 @@ Game Start Time(Local): 2024-12-17 22:15:30
    2 : 2024-12-17 22:15:37 : Time cost: 4s, Score: 40
 Game Start Time(Local): 2024-12-17 22:41:08
    1 : 2024-12-17 22:41:08 : Time cost: 11s, Score: 49
+Game Start Time(Local): 2024-12-18 21:08:55
+   1 : 2024-12-18 21:08:55 : Time cost: 3s, Score: 21
+   2 : 2024-12-18 21:09:05 : Time cost: 6s, Score: 45
+   3 : 2024-12-18 21:09:11 : Time cost: 3s, Score: 59
+Game Start Time(Local): 2024-12-18 21:10:45
+   1 : 2024-12-18 21:10:45 : Time cost: 4s, Score: 22
+Game Start Time(Local): 2024-12-18 21:22:23
+   1 : 2024-12-18 21:22:23 : Time cost: 3s, Score: 21
+Game Start Time(Local): 2024-12-18 21:35:43
+   1 : 2024-12-18 21:35:43 : Time cost: 5s, Score: 24
+   2 : 2024-12-18 21:35:56 : Time cost: 4s, Score: 41
+Game Start Time(Local): 2024-12-18 21:36:22
+   1 : 2024-12-18 21:36:22 : Time cost: 6s, Score: 30
+   2 : 2024-12-18 21:36:31 : Time cost: 3s, Score: 46
+   3 : 2024-12-18 21:36:37 : Time cost: 3s, Score: 62
+   4 : 2024-12-18 21:36:41 : Time cost: 2s, Score: 66
+Game Start Time(Local): 2024-12-18 21:37:01
+   1 : 2024-12-18 21:37:01 : Time cost: 4s, Score: 23
+   2 : 2024-12-18 21:37:08 : Time cost: 4s, Score: 41
+   3 : 2024-12-18 21:37:13 : Time cost: 4s, Score: 59
+   4 : 2024-12-18 21:37:16 : Time cost: 1s, Score: 60
+Game Start Time(Local): 2024-12-18 21:43:09
+   1 : 2024-12-18 21:43:09 : Time cost: 4s, Score: 23
+   2 : 2024-12-18 21:43:20 : Time cost: 3s, Score: 40
+   3 : 2024-12-18 21:43:25 : Time cost: 5s, Score: 61
+Game Start Time(Local): 2024-12-18 21:43:55
+   1 : 2024-12-18 21:43:55 : Time cost: 3s, Score: 21
+   2 : 2024-12-18 21:43:57 : Time cost: 1s, Score: 22
+   3 : 2024-12-18 21:44:06 : Time cost: 6s, Score: 54
+Game Start Time(Local): 2024-12-18 21:45:54
+   1 : 2024-12-18 21:45:54 : Time cost: 3s, Score: 20
+   2 : 2024-12-18 21:45:59 : Time cost: 3s, Score: 37
+Game Start Time(Local): 2024-12-18 21:49:45
+   1 : 2024-12-18 21:49:45 : Time cost: 7s, Score: 21
+   2 : 2024-12-18 21:49:59 : Time cost: 11s, Score: 48
+   3 : 2024-12-18 21:50:18 : Time cost: 17s, Score: 91
+Game Start Time(Local): 2024-12-18 22:06:02
+   1 : 2024-12-18 22:06:02 : Time cost: 9s, Score: 18

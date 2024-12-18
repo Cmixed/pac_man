@@ -13,7 +13,7 @@ import std;
 export
 {
     void play_music_eat();
-    void play_music_test();
+    void play_music_pause();
     bool play_music(const char* file_path);
 }
 
@@ -26,11 +26,11 @@ void play_music_eat()
 }
 
 /**
- * @brief 测试音乐播放
+ * @brief 播放暂停音乐
  */
-void play_music_test()
+void play_music_pause()
 {
-	PlaySound(TEXT("../src/music/eason.wav"), nullptr, SND_FILENAME | SND_ASYNC);
+	PlaySound(TEXT("../src/music/pause.wav"), nullptr, SND_FILENAME | SND_ASYNC);
 }
 
 /**
