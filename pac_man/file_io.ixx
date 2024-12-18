@@ -59,7 +59,7 @@ optional<int> fileRead(PacConfigure &configure)
 
     fin.close();
 
-    cout << "ReadFile Successfully！\n";
+    //cout << "ReadFile Successfully！\n";
     
     return optional<int>{1};
 }
@@ -83,7 +83,8 @@ optional<int> fileWrite(const PacRecord& record)
 	    }
     }
     catch (exception &e) {
-        std::cerr << e.what();
+        //std::cerr << e.what();
+        ;
         return optional<int>{0};
     }
 
@@ -106,7 +107,7 @@ optional<int> fileWrite(const PacRecord& record)
 
     fout.close();
 
-    std::cout << "FileIO over!\n";
+    //std::cout << "FileIO over!\n";
 
     /* 旧实现
      * ios_base::fmtflags old = fout.setf(ios::left, ios::adjustfield);

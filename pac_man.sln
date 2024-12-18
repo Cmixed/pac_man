@@ -4,6 +4,8 @@ VisualStudioVersion = 17.13.35507.96
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pac_man", "pac_man\pac_man.vcxproj", "{D70363D7-4FF1-4F0A-BDCB-79311C59840B}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "pacman_setup_win11_x64", "setup\pacman_setup_win11_x64\pacman_setup_win11_x64.vdproj", "{A2E7F6A7-722C-E066-10F4-B4247CC7B2C2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
