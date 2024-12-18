@@ -92,7 +92,7 @@ optional<int> fileWrite(const PacRecord& record)
         // 第一次运行
 		static int lineNumber = 1;
 	    if (lineNumber == 1) {
-	        fout << "Game Start Time(Local): " << std::put_time(&nowTm, "%Y-%m-%d %H:%M:%S") << '\n';
+	        fout << "\nGame Start Time(Local): " << std::put_time(&nowTm, "%Y-%m-%d %H:%M:%S") << '\n';
 	    }
 
 	    auto [time_cost, player_score] = record;
