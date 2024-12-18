@@ -5,6 +5,7 @@
 module;
 
 #include <ctime>
+#include <windows.h>
 
 export module file_io;
 
@@ -15,6 +16,18 @@ using namespace std;
 // 全局变量
 const int RECORD_NUMBER = 100;  // 读取记录数的上限
 
+// 吃豆人配置格式
+export class PacConfigure
+{
+private:
+    
+public:
+    unsigned int m_fps{ 0 };
+    unsigned int m_playerSpeed{ 0 };
+    unsigned int m_ghostSpeed{ 0 };
+};
+
+
 // 吃豆人记录格式
 export struct PacRecord
 {
@@ -24,20 +37,31 @@ export struct PacRecord
 
 export
 {
-	optional<int> fileRead(PacRecord record); // 文件读入
+	optional<int> fileRead(PacConfigure &configure); // 文件读入
     optional<int> fileWrite(const PacRecord& record); // 文件写入
 }
 
-optional<int> fileRead(PacRecord record)
+/**
+ * @brief 将配置文件从 configure.ini 中读出
+ * @param record 
+ * @return normal 1 error 0
+ */
+optional<int> fileRead(PacConfigure &configure)
 {
-	ifstream fin("settings.ini", ios_base::in | ios_base::binary);
+	ifstream fin("configure.ini", ios_base::in | ios_base::binary);
 
+    std::string place;
+
+    fin >> place;
+	fin >> place >> configure.m_fps;
+    fin >> place >> configure.m_playerSpeed;
+    fin >> place >> configure.m_ghostSpeed;
 
     fin.close();
 
     cout << "ReadFile Successfully！\n";
     
-    return true;
+    return optional<int>{1};
 }
 
 /**

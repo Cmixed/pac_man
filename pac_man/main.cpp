@@ -37,6 +37,7 @@ namespace g
 	bool isWin{true}, isEat{false}, isSkilled{false};
 	unsigned int eatNumber{ 0 };
 
+	unsigned int player_speed{ 10 }, ghost_speed{ 10 };
 }
 
 // 函数列表
@@ -66,7 +67,15 @@ BEGIN:
 
 	// 根据难度调整
 	{
-		
+		if (argv[1] == "developer") {
+			g::num = 149;
+		}
+
+		PacConfigure configure;
+		fileRead(configure);
+		g::Target_FPS = configure.m_fps;
+		g::player_speed = configure.m_playerSpeed;
+		g::ghost_speed = configure.m_ghostSpeed;
 	}
 
 	BeginBatchDraw();
@@ -245,7 +254,7 @@ optional<int> menu_pause()
 			solidrectangle(0, 720, 720, 840);
 
 			settextstyle(72, 0, "Elephant");
-			outtextxy(140, 316, "  P A U S E  ");
+			outtextxy(140, 316, "     P A U S E  ");
 			settextstyle(40, 0, "Elephant");
 			outtextxy(300, 750, "RETURN");
 		}
@@ -295,19 +304,36 @@ optional<int> menu_start()
 
 			outtextxy(ui.start.x, ui.start.y, "START");
 			outtextxy(ui.quit.x, ui.quit.y, "  QUIT");
+
+			settextstyle(32, 0, "Elephant");
+			outtextxy(ui.start.x-30, ui.quit.y + 80 , "Settings(Press 1)");
+			outtextxy(ui.start.x-30, ui.quit.y + 120, "  Date(Press 2)");
 		}
 
 		// 输入件判断
 		{
+			auto filePathData = ".\\data.txt";
+			auto filePathConfigure = ".\\configure.ini";
+
 			ExMessage k_m{ 0 };
 			peekmessage(&k_m, EX_KEY | EX_MOUSE);
 			if (k_m.message == WM_KEYDOWN) {
 				if (k_m.vkcode == VK_ESCAPE) {
 					cleardevice();
 					return optional<int>{-1};
-				} else if (k_m.vkcode == VK_SPACE) {
+				}
+				if (k_m.vkcode == VK_SPACE) {
 					cleardevice();
 					return optional<int>{1};
+				}
+				if (k_m.vkcode == '1') {
+					std::string command = "notepad \"" + std::string(filePathConfigure) + "\"";
+					system(command.c_str());
+				
+				}
+				if (k_m.vkcode == '2') {
+					std::string command = "notepad \"" + std::string(filePathData) + "\"";
+					system(command.c_str());
 				}
 			}
 
@@ -521,14 +547,14 @@ optional<int> game_core()
 
 		// 更新坐标
 		{
-			player.map_x = (player.x + 17) / 36;
-			player.map_y = (player.y + 17) / 36;
-			ghost[0].map_x = (ghost[0].x + 17) / 36;
-			ghost[0].map_y = (ghost[0].y + 17) / 36;
-			ghost[1].map_x = (ghost[1].x + 17) / 36;
-			ghost[1].map_y = (ghost[1].y + 17) / 36;
-			ghost[2].map_x = (ghost[2].x + 17) / 36;
-			ghost[2].map_y = (ghost[2].y + 17) / 36;
+			player.map_x = (player.x + player_speed) / 36;
+			player.map_y = (player.y + player_speed) / 36;
+			ghost[0].map_x = (ghost[0].x + ghost_speed) / 36;
+			ghost[0].map_y = (ghost[0].y + ghost_speed) / 36;
+			ghost[1].map_x = (ghost[1].x + ghost_speed) / 36;
+			ghost[1].map_y = (ghost[1].y + ghost_speed) / 36;
+			ghost[2].map_x = (ghost[2].x + ghost_speed) / 36;
+			ghost[2].map_y = (ghost[2].y + ghost_speed) / 36;
 		}
 
 

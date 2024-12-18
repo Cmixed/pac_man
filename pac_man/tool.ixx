@@ -1,5 +1,7 @@
 ﻿module;
 
+#include <chrono>
+
 export module tool;
 
 import std;
