@@ -25,7 +25,6 @@ namespace g
 
 	auto start{chrono::system_clock::now()};
 
-	double time{0};
 	int num{0}, num1{0}, g1_track_x{0}, g1_track_y{0};
 	int last_step_x{1}, last_step_y{1};
 	int phase{0}, ghost2_goal{0}, shake{1}, pos{0};
@@ -44,6 +43,7 @@ namespace g
 
 // 函数列表
 bool init_game();
+optional<int> menu_game();
 optional<int> menu_start();
 optional<int> game_core();
 optional<int> game_end(bool is_win, unsigned long long score);
@@ -57,8 +57,7 @@ BEGIN:
 
 	// 确保正确初始化
 	try {
-		auto isInit = init_game();
-		if (!isInit) {
+		if (!init_game()) {
 			throw runtime_error{"Init filed!!!"};
 		}
 	}
@@ -76,8 +75,8 @@ BEGIN:
 
 	// 开始菜单
 	{
-		auto menuStatus = menu_start();
-		switch (menuStatus.value()) {
+		//auto menuStatus = menu_start();
+		switch (menu_start().value()) {
 		case -1:
 			return 0;
 		case 1:
@@ -106,9 +105,8 @@ BEGIN:
 
 	// 游戏主程序
 	{
-		g::start = chrono::system_clock::now();
-		auto gameStatue = game_core();
-		switch (gameStatue.value()) {
+		//g::start = chrono::system_clock::now();
+		switch (game_core().value()) {
 		case -1:
 			is_exit = true;
 			score_t.join();
@@ -129,8 +127,7 @@ BEGIN:
 
 	// 游戏结束 && 状态判定
 	{
-		auto endStatus = game_end(isWin, score);
-		switch (endStatus.value()) {
+		switch (game_end(isWin, score).value()) {
 		case -1:
 			EndBatchDraw();
 			return 0;
@@ -215,6 +212,60 @@ bool init_game()
 	ghost[2].live = true;
 
 	return true;
+}
+
+/**
+ * @brief 暂停菜单
+ * @param
+ * @return 返回 1 退出 -1
+ */
+optional<int> menu_game()
+{
+	using namespace g;
+
+	// 打印到屏幕
+
+	// 返回 menu
+	{
+		while (true) {
+
+			cleardevice();
+
+		{
+			setlinecolor(WHITE);
+			settextcolor(WHITE);
+			setfillcolor(BLACK);
+			setlinestyle(BS_SOLID, 5);
+			roundrect(120, 300, 600, 400, 10, 10);
+			solidroundrect(120, 300, 600, 400, 10, 10);
+			solidrectangle(0, 720, 720, 840);
+
+			settextstyle(72, 0, "Elephant");
+			outtextxy(140, 316, "P A U S E");
+			settextstyle(40, 0, "Elephant");
+			outtextxy(300, 750, "RETURN");
+		}
+
+
+			peekmessage(&g::k_m, EX_KEY | EX_MOUSE);
+
+			if (k_m.vkcode == VK_ESCAPE) {
+				cleardevice();
+				return optional<int>{-1};
+			}
+			else if (k_m.vkcode == VK_SPACE) {
+				cleardevice();
+				//return optional<int>{1};
+			}
+
+			if (k_m.message == WM_LBUTTONDOWN &&
+				k_m.x > 292 && k_m.x < 416 && k_m.y > 750 && k_m.y < 786) {
+				cleardevice();
+				return optional<int>{1};
+			}
+
+		}
+	}
 }
 
 /**
@@ -363,6 +414,18 @@ optional<int> game_core()
 						player.y = player.map_y * 36;
 					}
 					break;
+				case 'P':
+					{
+						auto pauseStatus = menu_game();
+						switch (pauseStatus.value()) {
+						case -1:
+							return optional<int>{-1};
+						case 1:
+							break;
+						default:
+							return optional<int>{-1};
+						}
+					}
 				case VK_ESCAPE:
 					return optional<int>{-1};
 				case VK_SPACE:

@@ -21,9 +21,6 @@
     <ClCompile Include="character.ixx">
       <Filter>头文件</Filter>
     </ClCompile>
-    <ClCompile Include="data.ixx">
-      <Filter>头文件</Filter>
-    </ClCompile>
     <ClCompile Include="draw.ixx">
       <Filter>头文件</Filter>
     </ClCompile>
