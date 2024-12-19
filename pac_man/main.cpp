@@ -65,17 +65,18 @@ BEGIN:
 		return 0;
 	}
 
-	// 根据难度调整
+	// cmd 命令行命令
 	{
-		if (argv[1] == "developer") {
+		if (argv[1] == "God") {
 			g::num = 149;
 		}
+		if (argv[1] == "Win") {
+			g::isWin = true;
+		}
+		if (argv[1] == "Music") {
+			play_music_pause();
+		}
 
-		PacConfigure configure;
-		fileRead(configure);
-		g::Target_FPS = configure.m_fps;
-		g::player_speed = configure.m_playerSpeed;
-		g::ghost_speed = configure.m_ghostSpeed;
 	}
 
 	BeginBatchDraw();
@@ -90,6 +91,12 @@ BEGIN:
 		default:
 			return 0;
 		}
+
+		PacConfigure configure;
+		fileRead(configure);
+		g::Target_FPS = configure.m_fps;
+		g::player_speed = configure.m_playerSpeed;
+		g::ghost_speed = configure.m_ghostSpeed;
 	}
 
 	unsigned long long score{ 0 };
@@ -107,8 +114,6 @@ BEGIN:
 			}
 		}
 	});
-
-	GAME:
 
 	// 游戏主程序
 	{
@@ -128,11 +133,16 @@ BEGIN:
 		}
 	}
 
+
 	is_exit = true;
 	score_t.join();
 
 	// 游戏结束 && 状态判定
 	{
+		if (argv[1] == "Win") {
+			g::isWin = true;
+		}
+
 		switch (game_end(isWin, score).value()) {
 		case -1:
 			EndBatchDraw();
