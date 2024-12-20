@@ -83,8 +83,7 @@ optional<int> fileWrite(const PacRecord& record)
 	    }
     }
     catch (exception &e) {
-        //std::cerr << e.what();
-        ;
+        std::cerr << e.what();
         return optional<int>{0};
     }
 

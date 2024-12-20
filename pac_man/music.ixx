@@ -22,7 +22,7 @@ export
  */
 void play_music_eat()
 {
-	PlaySound(TEXT("../src/Eat.wav"), NULL, SND_FILENAME | SND_ASYNC);
+	PlaySound(TEXT("../src/Eat.wav"), nullptr, SND_FILENAME | SND_ASYNC);
 }
 
 /**
